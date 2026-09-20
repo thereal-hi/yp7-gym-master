@@ -1,18 +1,15 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Timetable {
 
-    private Map<DayOfWeek, Map<TimeOfDay, List<TrainingSession>>> timetable;
+    private Map<DayOfWeek, Map<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         DayOfWeek day = trainingSession.getDayOfWeek();
         TimeOfDay time = trainingSession.getTimeOfDay();
 
         Map<TimeOfDay, List<TrainingSession>> dayMap =
-                timetable.computeIfAbsent(day, k -> new HashMap<>());
+                timetable.computeIfAbsent(day, k -> new TreeMap<>());
 
         List<TrainingSession> sessions =
                 dayMap.computeIfAbsent(time, k -> new ArrayList<>());
@@ -50,6 +47,23 @@ public class Timetable {
         }
 
         return new ArrayList<>(sessions);
+    }
+
+    public List<Map.Entry<Coach, Integer>> getCountByCoaches() {
+        Map<Coach, Integer> counts = new HashMap<>();
+
+        for (Map<TimeOfDay, List<TrainingSession>> dayMap : timetable.values()) {
+            for (List<TrainingSession> sessions : dayMap.values()) {
+                for (TrainingSession session : sessions) {
+                    Coach coach = session.getCoach();
+                    counts.put(coach, counts.getOrDefault(coach, 0) + 1);
+                }
+            }
+        }
+
+        List<Map.Entry<Coach, Integer>> result = new ArrayList<>(counts.entrySet());
+        result.sort((a, b) -> b.getValue() - a.getValue());
+        return result;
     }
 
 }
