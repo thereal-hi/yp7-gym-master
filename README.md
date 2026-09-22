@@ -49,8 +49,3 @@ Java-приложение для управления расписанием д�
 - Java 17+
 - JUnit 5
 - Maven
-
-## Запуск
-
-```bash
-mvn clean test
